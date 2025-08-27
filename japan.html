@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,10 @@
     <!-- jQuery UI for autocomplete -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
         body {
             margin: 0;
@@ -324,13 +328,36 @@
             color: white;
             margin-top: 0px;
         }
+
+        .food-map {
+            height: 300px;
+            width: 100%;
+            margin-top: 10px;
+            display: none; /* hidden until button clicked */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        button {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background: #e68900;
+            }
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav>
         <ul>
-            <li><a href="mainpage.html">Home</a></li>
+            <li><a href="index.html">Home</a></li>
             <li>
                 <a href="#">Country ▾</a>
                 <ul class="dropdown">
@@ -368,6 +395,8 @@
                 <div class="desc-box">
                     <img src="yakitori_real.jpg" alt="Yakitori Real">
                     <p>Skewered chicken grilled over charcoal, a popular izakaya street food.</p>
+                    <button onclick="showFoodMap('Yakitori')">View on Map</button>
+
                 </div>
             </div>
             <div class="food-item oden">
@@ -376,6 +405,7 @@
                 <div class="desc-box">
                     <img src="oden_real.jpg" alt="Oden Real">
                     <p>A warm winter dish with boiled eggs, radish, fish cakes, and broth.</p>
+                    <button onclick="showFoodMap('Oden')">View on Map</button>
                 </div>
             </div>
             <div class="food-item taiyaki">
@@ -384,6 +414,7 @@
                 <div class="desc-box">
                     <img src="taiyaki_real.jpg" alt="Taiyaki Real">
                     <p>Fish-shaped cake filled with sweet red bean paste or custard.</p>
+                    <button onclick="showFoodMap('Taiyaki')">View on Map</button>
                 </div>
             </div>
             <div class="food-item dango">
@@ -392,6 +423,7 @@
                 <div class="desc-box">
                     <img src="dango_real.jpg" alt="Dango Real">
                     <p>Chewy rice flour dumplings often served on skewers with sauces.</p>
+                    <button onclick="showFoodMap('Dango')">View on Map</button>
                 </div>
             </div>
             <div class="food-item takoyaki">
@@ -400,9 +432,14 @@
                 <div class="desc-box">
                     <img src="takoyaki_real.png" alt="Takoyaki Real">
                     <p>Savory octopus-filled batter balls topped with sauce and bonito flakes.</p>
+                    <button onclick="showFoodMap('Takoyaki')">View on Map</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="food-map-container" style="width:100%; max-width:900px; margin:20px auto; display:none;">
+        <div id="food-map" style="width:100%; height:400px; border:2px solid #ccc; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
     </div>
 
     <!-- Footer -->
@@ -507,6 +544,90 @@
                 userLabel.textContent = "";
             }
         };
+
+        // Initialize map (hidden at first)
+        var map = L.map('food-map').setView([3.139, 101.686], 13); // Default KL
+
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var foodLocations = {
+            "Yakitori": {
+                coords: [35.6344351304132, 139.71691065347292],
+                stall: "Torishiki",
+                hours: "5:00 PM – 10:00 PM",
+                location: "2 Chome-14-12 Kamiosaki, Shinagawa City, Tokyo 141-0021, Japan",
+                details: "https://maps.app.goo.gl/rHLvkZNzx3pAVsvdA"
+            },
+            "Oden": {
+                coords: [35.724336750317896, 139.79104271299914],
+                stall: "Otafuku",
+                hours: "4:00 PM – 10:00 PM",
+                location: "1 Chome-6-2 Senzoku, Taito City, Tokyo 111-0031, Japan",
+                details: "https://maps.app.goo.gl/hi2Sxdo2zqqYA1ZX9"
+            },
+            "Taiyaki": {
+                coords: [35.656303029319204, 139.7350758862589],
+                stall: "Naniwaya Sōhonten Azabu Juban",
+                hours: "11:00 AM – 7:00 PM",
+                location: "1 Chome-8-14 Azabujuban, Minato City, Tokyo 106-0045, Japan",
+                details: "https://maps.app.goo.gl/RZdzzayQWgasL3Hv9"
+            },
+            "Dango": {
+                coords: [35.03974944550694, 135.77078563023562],
+                stall: "Kamo Mitarashi Chaya",
+                hours: "9:30 AM – 6:30 PM",
+                location: "53 Shimogamo Matsunokicho, Sakyo Ward, Kyoto, 606-0816, Japan",
+                details: "https://maps.app.goo.gl/HbUmgHH5ofJ8dCcQ6"
+            },
+            "Takoyaki": {
+                coords: [34.7031684199888, 135.51654962459506],
+                stall: "Takoyaki Mahō-dako",
+                hours: "2:00 PM – 9:00 PM",
+                location: "2 Chome-14-19 Doshin, Kita Ward, Osaka, 530-0035, Japan",
+                details: "https://maps.app.goo.gl/A6RdysvVqhHSC2J6A"
+            },
+        };
+
+        // Show map when food button is clicked
+        function showFoodMap(foodName) {
+            if (foodLocations[foodName]) {
+                const data = foodLocations[foodName];
+
+                // Show map container
+                document.getElementById("food-map-container").style.display = "block";
+
+                setTimeout(() => {
+                    map.invalidateSize();
+                    map.setView(data.coords, 15);
+
+                    // Rich popup with details
+                    let popupContent = `
+          <div style="font-family:Arial;max-width:220px;">
+            <h3 style="margin:0;">${foodName}</h3>
+            <p><b>${data.stall}</p>
+            <p><b>Hours:</b> ${data.hours}</p>
+            <p><b>Location:</b> ${data.location}</p>
+            <a href="${data.details}" target="_blank" style="color:#007bff;">📍 View on Google Maps</a>
+          </div>
+`;
+
+                    L.popup({ maxWidth: 250 })
+                        .setLatLng(data.coords)
+                        .setContent(popupContent)
+                        .openOn(map);
+
+                    // Smooth scroll
+                    document.getElementById("food-map-container").scrollIntoView({
+                        behavior: "smooth"
+                    });
+                }, 200);
+            }
+        }
+
     </script>
+
 </body>
 </html>
