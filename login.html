@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page - Street Foodie</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Title */
+        .title {
+            text-align: center;
+            padding: 10px 100px 50px;
+        }
+
+            .title h1 {
+                font-size: 50px;
+                font-weight: 900;
+                font-family: 'Copperplate Gothic 29 BC', sans-serif; /* title */
+            }
+
+            .title p {
+                font-size: 15px;
+                letter-spacing: 1px;
+                color: #666;
+            }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+            width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            button:hover {
+                background: #45a049;
+            }
+
+        .illustration {
+            position: absolute;
+            width: 250px;
+            transform: translateY(-50%);
+            animation: wave 3s ease-in-out infinite;
+        }
+
+            .illustration.above {
+                top: 30%;
+                left: 5%;
+            }
+
+            .illustration.bottom {
+                bottom: -10%;
+                left: 30%;
+            }
+
+        /* Wave animation */
+        @keyframes wave {
+            0% {
+                transform: translateY(-50%) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-55%) rotate(2deg);
+            }
+
+            100% {
+                transform: translateY(-50%) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Title -->
+    <div class="title">
+        <h1>STREET FOODIE</h1>
+        <p>Street food is not just a meal, it's an edible adventure</p>
+    </div>
+    <br />
+    <img src="ramlyburger.png" alt="Above Illustration" class="illustration above">
+
+    <div class="container">
+        <h2>Register</h2>
+        <input type="text" id="regUser" placeholder="Username">
+        <input type="password" id="regPass" placeholder="Password">
+        <button onclick="register()">Register</button>
+
+        <h2>Login</h2>
+        <input type="text" id="loginUser" placeholder="Username">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <img src="somtum.png" alt="Bottom Illustration" class="illustration bottom">
+
+    <script>
+        // ---------- COOKIE FUNCTIONS ----------
+        function setCookie(name, value, days) {
+            let d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            let cname = name + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        // ---------- REGISTER ----------
+        function register() {
+            let user = document.getElementById("regUser").value;
+            let pass = document.getElementById("regPass").value;
+
+            if (user && pass) {
+                localStorage.setItem("username", user);
+                localStorage.setItem("password", pass);
+                alert("Registration successful! Now login.");
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+
+        // ---------- LOGIN ----------
+        function login() {
+            let user = document.getElementById("loginUser").value;
+            let pass = document.getElementById("loginPass").value;
+
+            let savedUser = localStorage.getItem("username");
+            let savedPass = localStorage.getItem("password");
+
+            if (user === savedUser && pass === savedPass) {
+                sessionStorage.setItem("loggedInUser", user);
+                setCookie("username", user, 7); // remember for 7 days
+                alert("Login successful!");
+                window.location.href = "mainpage.html"; // go to main page
+            } else {
+                alert("Invalid credentials!");
+            }
+        }
+
+        // ---------- PREFILL FROM COOKIE ----------
+        window.onload = function () {
+            let rememberedUser = getCookie("username");
+            if (rememberedUser) {
+                document.getElementById("loginUser").value = rememberedUser;
+            }
+        }</script>
+</body>
+</html>

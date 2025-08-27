@@ -1,0 +1,512 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japan - Street Foodie</title>
+    <link href="https://fonts.cdnfonts.com/css/gagalin" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/copperplate-gothic-29-bc" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI for autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Gagalin', sans-serif;
+            background: linear-gradient(135deg, #cde8f3, #f7eed1); /* sky blue */
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: #f3f3f3;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+            nav ul {
+                list-style: none;
+                display: flex;
+                gap: 30px;
+            }
+
+                nav ul li a {
+                    text-decoration: none;
+                    color: #000;
+                    font-weight: bold;
+                    font-family: 'Copperplate Gothic 29 BC', sans-serif;
+                }
+
+                    nav ul li a:hover {
+                        color: #ff5733;
+                    }
+
+                nav ul li ul.dropdown {
+                    display: none;
+                    position: absolute;
+                    background: #fffaf0;
+                    top: 65%;
+                    left: 130px;
+                    padding: 10px 0;
+                    list-style: none;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    border-radius: 8px;
+                    min-width: 150px;
+                    z-index: 1000;
+                }
+
+                nav ul li:hover ul.dropdown {
+                    display: block;
+                }
+
+                nav ul li ul.dropdown li a {
+                    color: #333;
+                    padding: 8px 15px;
+                    display: block;
+                    font-weight: normal;
+                }
+
+                    nav ul li ul.dropdown li a:hover {
+                        background: #f4e1d2;
+                        color: #8b4513;
+                    }
+
+        .search {
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            border-radius: 20px;
+            outline: none;
+            font-family: 'Copperplate Gothic 29 BC', sans-serif;
+        }
+
+        /* Search + Login container */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* space between search bar and login button */
+        }
+
+        /* Login button style */
+        .auth-btn {
+            background: #4a4a4a;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-decoration: none; /* remove underline */
+            font-family: 'Copperplate Gothic 29 BC', sans-serif;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+            .auth-btn:hover {
+                background: #e74c3c;
+            }
+
+        /* Title */
+
+        .title {
+            text-align: left;
+            padding: 30px 50px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 5;
+        }
+
+            .title img {
+                width: 200px;
+            }
+
+            .title h1 {
+                font-family: 'Copperplate Gothic 29 BC', sans-serif;
+                font-size: 36px;
+                margin: 0;
+            }
+        /* Mountain PNG */
+
+        .mountain {
+            position: relative;
+            width: 130%;
+            height: 1000px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+            .mountain img {
+                width: 100%;
+                position: absolute;
+                bottom: -100%; /* start off screen */
+                left: -100px;
+                animation: slideUp 1.2s ease-out forwards;
+            }
+
+        @keyframes slideUp {
+            to {
+                bottom: 0;
+            }
+        }
+        /* Food positioning */
+
+        .food-items {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .food-item {
+            position: absolute;
+            text-align: center; /* NEW: hidden before animation */
+            opacity: 0;
+            transform: scale(0.5);
+        }
+            /* Cartoon food (default) */
+
+            .food-item > img {
+                width: 160px;
+                display: block;
+                margin: 0 auto;
+                transition: transform 0.3s, opacity 0.3s;
+                z-index: 1;
+            }
+            /* Only the cartoon food fades on hover */
+
+            .food-item:hover > img {
+                transform: scale(1.05);
+                opacity: 0.5;
+            }
+
+        .desc-box {
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            top: -600%;
+            left: 60%;
+            transform: translateX(-50%) translateY(10px);
+            background: #e5e0c6; /* beige background */
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            padding: 15px;
+            width: 260px;
+            display: flex; /* stack children */
+            flex-direction: column;
+            align-items: center;
+            z-index: 3;
+            text-align: center;
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+        }
+
+            .desc-box img {
+                width: 100%;
+                border-radius: 12px;
+                display: block;
+                margin-bottom: 10px;
+                position: static;
+            }
+
+            .desc-box p {
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.5;
+                color: #000;
+            }
+        /* Show popup on hover */
+
+        .food-item:hover > img {
+            transform: scale(1.05);
+            opacity: 0.5;
+        }
+
+        .food-item:hover .desc-box {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        /* Individual sizes for cartoon versions */
+
+        .yakitori img {
+            width: 250px;
+        }
+
+        .oden img {
+            width: 200px;
+        }
+
+        .taiyaki img {
+            width: 220px;
+        }
+
+        .dango img {
+            width: 100px;
+        }
+
+        .takoyaki img {
+            width: 220px;
+        }
+        /* Fix dango real pic bigger */
+
+        .dango .desc-box img {
+            width: 100%;
+            max-width: 260px;
+        }
+
+        .label {
+            background: #d9c6a5;
+            display: inline-block;
+            padding: 6px 14px;
+            margin-top: 8px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Copperplate Gothic 29 BC', sans-serif;
+            position: relative;
+            z-index: 2;
+        }
+        /* Specific positions */
+
+        .yakitori {
+            top: 400px;
+            left: 15%;
+        }
+
+        .oden {
+            top: 420px;
+            right: 40%;
+        }
+
+        .taiyaki {
+            top: 600px;
+            left: 40%;
+            transform: translateX(-50%);
+        }
+
+        .dango {
+            bottom: 100px;
+            left: 18%;
+        }
+
+        .takoyaki {
+            bottom: 150px;
+            right: 35%;
+        }
+        /* NEW: food pop-in animation */
+
+        .food-item.show {
+            animation: popIn 0.6s ease forwards;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        /* Footer */
+
+        footer {
+            text-align: center;
+            padding: 5px;
+            background: #444;
+            color: white;
+            margin-top: 0px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="mainpage.html">Home</a></li>
+            <li>
+                <a href="#">Country ▾</a>
+                <ul class="dropdown">
+                    <li><a href="malaysia.html">Malaysia</a></li>
+                    <li><a href="japan.html">Japan</a></li>
+                    <li><a href="thailand.html">Thailand</a></li>
+                    <li><a href="taiwan.html">Taiwan</a></li>
+                </ul>
+            </li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="feedback.html">Feedback</a></li>
+        </ul>
+        <div class="nav-right">
+            <input type="text" placeholder="Search..." class="search">
+            <a href="login.html" id="authBtn" class="auth-btn">Login</a>
+            <span id="userLabel" style="margin-left:10px; font-weight:bold; color:#333;"></span>
+        </div>
+    </nav>
+
+    <!-- Title -->
+    <div class="title">
+        <img src="japanflag.png" alt="Japan Flag">
+        <h1>JAPAN</h1>
+    </div>
+
+    <!-- Mountain background -->
+    <div class="mountain">
+        <img src="mount.png" alt="Mountain Background">
+
+        <!-- Food items -->
+        <div class="food-items">
+            <div class="food-item yakitori">
+                <img src="yakitori.png" alt="Yakitori">
+                <div class="label">Yakitori</div>
+                <div class="desc-box">
+                    <img src="yakitori_real.jpg" alt="Yakitori Real">
+                    <p>Skewered chicken grilled over charcoal, a popular izakaya street food.</p>
+                </div>
+            </div>
+            <div class="food-item oden">
+                <img src="oden.png" alt="Oden">
+                <div class="label">Oden</div>
+                <div class="desc-box">
+                    <img src="oden_real.jpg" alt="Oden Real">
+                    <p>A warm winter dish with boiled eggs, radish, fish cakes, and broth.</p>
+                </div>
+            </div>
+            <div class="food-item taiyaki">
+                <img src="taiyaki.png" alt="Taiyaki">
+                <div class="label">Taiyaki</div>
+                <div class="desc-box">
+                    <img src="taiyaki_real.jpg" alt="Taiyaki Real">
+                    <p>Fish-shaped cake filled with sweet red bean paste or custard.</p>
+                </div>
+            </div>
+            <div class="food-item dango">
+                <img src="dango.png" alt="Dango">
+                <div class="label">Dango</div>
+                <div class="desc-box">
+                    <img src="dango_real.jpg" alt="Dango Real">
+                    <p>Chewy rice flour dumplings often served on skewers with sauces.</p>
+                </div>
+            </div>
+            <div class="food-item takoyaki">
+                <img src="takoyaki.png" alt="Takoyaki">
+                <div class="label">Takoyaki</div>
+                <div class="desc-box">
+                    <img src="takoyaki_real.png" alt="Takoyaki Real">
+                    <p>Savory octopus-filled batter balls topped with sauce and bonito flakes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Street Food. All rights reserved.</p>
+    </footer>
+
+    <!-- NEW: Script to pop up foods after mountain -->
+    <script>
+        window.addEventListener("load", () => {
+            const mountain = document.querySelector(".mountain img");
+            const foods = document.querySelectorAll(".food-item");
+
+            mountain.addEventListener("animationend", () => {
+                foods.forEach((food, index) => {
+                    setTimeout(() => {
+                        food.classList.add("show");
+                    }, index * 500); // delay each food by 0.5s
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            // Food database: name + target page
+            let foods = [
+                { label: "Nasi Lemak", url: "malaysia.html" },
+                { label: "Satay", url: "malaysia.html" },
+                { label: "Roti Canai", url: "malaysia.html" },
+                { label: "Ramly Burger", url: "malaysia.html" },
+                { label: "Cendol", url: "malaysia.html" },
+                { label: "Yakitori", url: "japan.html" },
+                { label: "Taiyaki", url: "japan.html" },
+                { label: "Takoyaki", url: "japan.html" },
+                { label: "Oden", url: "japan.html" },
+                { label: "Dango", url: "japan.html" },
+                { label: "Pad Thai", url: "thailand.html" },
+                { label: "Mango Sticky Rice", url: "thailand.html" },
+                { label: "Som Tam", url: "thailand.html" },
+                { label: "Moo Ping", url: "thailand.html" },
+                { label: "Khao Soi", url: "thailand.html" },
+                { label: "Bubble Milk Tea", url: "taiwan.html" },
+                { label: "Gua Bao", url: "taiwan.html" },
+                { label: "Xiao Long Bao", url: "taiwan.html" },
+                { label: "Stinky Tofu", url: "taiwan.html" },
+                { label: "Sweet Potato Balls", url: "taiwan.html" }
+            ];
+
+            // Initialize autocomplete
+            $(".search").autocomplete({
+                source: foods,
+                select: function (event, ui) {
+                    window.location.href = ui.item.url; // redirect on click
+                }
+            });
+
+            // Handle Enter key (if exact match typed)
+            $(".search").on("keypress", function (e) {
+                if (e.which === 13) { // Enter key
+                    let query = $(this).val().toLowerCase();
+                    let match = foods.find(f => f.label.toLowerCase() === query);
+                    if (match) {
+                        window.location.href = match.url;
+                    } else {
+                        alert("No food found! Try again.");
+                    }
+                }
+            });
+        });
+
+        function logout(event) {
+            if (event) event.preventDefault(); // stop link redirect
+
+            // clear login state
+            sessionStorage.removeItem("loggedInUser");
+            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            alert("Logged out successfully!");
+
+            // Reset button back to Login
+            let authBtn = document.getElementById("authBtn");
+            let userLabel = document.getElementById("userLabel");
+
+            authBtn.textContent = "Login";
+            authBtn.href = "login.html";
+            authBtn.onclick = null; // remove logout binding
+            userLabel.textContent = "";
+        }
+
+        window.onload = function () {
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+            let authBtn = document.getElementById("authBtn");
+            let userLabel = document.getElementById("userLabel");
+
+            if (loggedInUser) {
+                authBtn.textContent = "Logout";
+                authBtn.href = "#"; // dummy link
+                authBtn.onclick = logout;
+                userLabel.textContent = "(" + loggedInUser + ")";
+            } else {
+                authBtn.textContent = "Login";
+                authBtn.href = "login.html";
+                userLabel.textContent = "";
+            }
+        };
+    </script>
+</body>
+</html>

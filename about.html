@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Street Foodie</title>
+    <link href="https://fonts.cdnfonts.com/css/gagalin" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/copperplate-gothic-29-bc" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI for autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Gagalin', sans-serif;
+            background: #f5f7f8;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar (same as about.html) */
+        nav {
+            background: #f3f3f3;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+            nav ul {
+                list-style: none;
+                display: flex;
+                gap: 30px;
+            }
+
+                nav ul li a {
+                    text-decoration: none;
+                    color: #000;
+                    font-weight: bold;
+                    font-family: 'Copperplate Gothic 29 BC', sans-serif;
+                }
+
+                    nav ul li a:hover {
+                        color: #ff5733;
+                    }
+
+                nav ul li ul.dropdown {
+                    display: none;
+                    position: absolute;
+                    background: #fffaf0;
+                    top: 65%;
+                    left: 130px;
+                    padding: 10px 0;
+                    list-style: none;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    border-radius: 8px;
+                    min-width: 150px;
+                    z-index: 1000;
+                }
+
+                nav ul li:hover ul.dropdown {
+                    display: block;
+                }
+
+                nav ul li ul.dropdown li a {
+                    color: #333;
+                    padding: 8px 15px;
+                    display: block;
+                    font-weight: normal;
+                }
+
+                    nav ul li ul.dropdown li a:hover {
+                        background: #f4e1d2;
+                        color: #8b4513;
+                    }
+
+        .search {
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            border-radius: 20px;
+            outline: none;
+            font-family: 'Copperplate Gothic 29 BC', sans-serif;
+        }
+
+        /* Search + Login container */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* space between search bar and login button */
+        }
+
+        /* Login button style */
+        .auth-btn {
+            background: #4a4a4a;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-decoration: none; /* remove underline */
+            font-family: 'Copperplate Gothic 29 BC', sans-serif;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+            .auth-btn:hover {
+                background: #e74c3c;
+            }
+
+        /* Title */
+        .title {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+
+            .title h1 {
+                font-family: 'Copperplate Gothic 29 BC', sans-serif;
+                font-size: 40px;
+                margin-bottom: 20px;
+            }
+
+        /* About text with box */
+        .about-box {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 80px;
+            margin: 0 auto 60px;
+            max-width: 600px;
+            font-size: 17px;
+            line-height: 2;
+            color: #333;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            /* Bounce animation */
+            opacity: 0;
+            animation: bounceIn 1s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        /* Bounce Keyframes */
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Pop animation for illustrations */
+        @keyframes scaleUp {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            80% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Illustrations positioned */
+        .food-illustrations img {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .corndog {
+            top: 100px;
+            left: 110px;
+            width: 180px;
+            animation: scaleUp 0.8s ease forwards;
+            animation-delay: 1.2s;
+        }
+
+        .kuih {
+            top: 350px;
+            left: 90px;
+            width: 150px;
+            animation: scaleUp 0.8s ease forwards;
+            animation-delay: 1.4s;
+        }
+
+        .taco {
+            bottom: 80px;
+            left: 280px;
+            width: 170px;
+            animation: scaleUp 0.8s ease forwards;
+            animation-delay: 1.6s;
+        }
+
+        .sausage {
+            top: 180px;
+            right: 300px;
+            width: 180px;
+            animation: scaleUp 0.8s ease forwards;
+            animation-delay: 1.8s;
+        }
+
+        .taiyaki {
+            top: 220px;
+            right: 80px;
+            width: 160px;
+            animation: scaleUp 0.8s ease forwards;
+            animation-delay: 2s;
+        }
+
+        .stall {
+            bottom: 40px;
+            right: 30px;
+            width: 300px;
+            animation: bounceIn 1s ease forwards;
+            animation-delay: 0.2s; /* same as description */
+        }
+
+        footer {
+            text-align: center;
+            padding: 5px;
+            background: #444;
+            color: white;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="mainpage.html">Home</a></li>
+            <li>
+                <a href="#">Country ▾</a>
+                <ul class="dropdown">
+                    <li><a href="malaysia.html">Malaysia</a></li>
+                    <li><a href="japan.html">Japan</a></li>
+                    <li><a href="thailand.html">Thailand</a></li>
+                    <li><a href="taiwan.html">Taiwan</a></li>
+                </ul>
+            </li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="feedback.html">Feedback</a></li>
+        </ul>
+        <div class="nav-right">
+            <input type="text" placeholder="Search..." class="search">
+            <a href="login.html" id="authBtn" class="auth-btn">Login</a>
+            <span id="userLabel" style="margin-left:10px; font-weight:bold; color:#333;"></span>
+        </div>
+    </nav>
+
+    <!-- Title -->
+    <div class="title">
+        <h1>ABOUT</h1>
+    </div>
+
+    <!-- About Paragraph with Box -->
+    <div class="about-box">
+        Street Foodie is your digital passport to the world’s street food culture. We bring together the flavors, 
+        stories, and traditions behind iconic dishes from different countries – from smoky satay in Malaysia to 
+        comforting oden in Japan and sweet bubble tea in Taiwan with a hint of sour tang som tum in Thailand. More 
+        than just food, each dish reflects a community’s history and way of life. At Street Foodie, we invite you 
+        to explore, taste, and celebrate the joy of street food from around the globe.
+    </div>
+
+    <!-- Illustrations -->
+    <div class="food-illustrations">
+        <img src="corndog.png" class="corndog" alt="Corndog">
+        <img src="kuih.png" class="kuih" alt="Kuih">
+        <img src="taco.png" class="taco" alt="Taco">
+        <img src="octosausage.png" class="sausage" alt="Sausage">
+        <img src="taiyaki.png" class="taiyaki" alt="Taiyaki">
+        <img src="stall.png" class="stall" alt="Street Food Stall">
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Street Food. All rights reserved.</p>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            // Food database: name + target page
+            let foods = [
+                { label: "Nasi Lemak", url: "malaysia.html" },
+                { label: "Satay", url: "malaysia.html" },
+                { label: "Roti Canai", url: "malaysia.html" },
+                { label: "Ramly Burger", url: "malaysia.html" },
+                { label: "Cendol", url: "malaysia.html" },
+                { label: "Yakitori", url: "japan.html" },
+                { label: "Taiyaki", url: "japan.html" },
+                { label: "Takoyaki", url: "japan.html" },
+                { label: "Oden", url: "japan.html" },
+                { label: "Dango", url: "japan.html" },
+                { label: "Pad Thai", url: "thailand.html" },
+                { label: "Mango Sticky Rice", url: "thailand.html" },
+                { label: "Som Tam", url: "thailand.html" },
+                { label: "Moo Ping", url: "thailand.html" },
+                { label: "Khao Soi", url: "thailand.html" },
+                { label: "Bubble Milk Tea", url: "taiwan.html" },
+                { label: "Gua Bao", url: "taiwan.html" },
+                { label: "Xiao Long Bao", url: "taiwan.html" },
+                { label: "Stinky Tofu", url: "taiwan.html" },
+                { label: "Sweet Potato Balls", url: "taiwan.html" }
+            ];
+
+            // Initialize autocomplete
+            $(".search").autocomplete({
+                source: foods,
+                select: function (event, ui) {
+                    window.location.href = ui.item.url; // redirect on click
+                }
+            });
+
+            // Handle Enter key (if exact match typed)
+            $(".search").on("keypress", function (e) {
+                if (e.which === 13) { // Enter key
+                    let query = $(this).val().toLowerCase();
+                    let match = foods.find(f => f.label.toLowerCase() === query);
+                    if (match) {
+                        window.location.href = match.url;
+                    } else {
+                        alert("No food found! Try again.");
+                    }
+                }
+            });
+        });
+
+        function logout(event) {
+            if (event) event.preventDefault(); // stop link redirect
+
+            // clear login state
+            sessionStorage.removeItem("loggedInUser");
+            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            alert("Logged out successfully!");
+
+            // Reset button back to Login
+            let authBtn = document.getElementById("authBtn");
+            let userLabel = document.getElementById("userLabel");
+
+            authBtn.textContent = "Login";
+            authBtn.href = "login.html";
+            authBtn.onclick = null; // remove logout binding
+            userLabel.textContent = "";
+        }
+
+        window.onload = function () {
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+            let authBtn = document.getElementById("authBtn");
+            let userLabel = document.getElementById("userLabel");
+
+            if (loggedInUser) {
+                authBtn.textContent = "Logout";
+                authBtn.href = "#"; // dummy link
+                authBtn.onclick = logout;
+                userLabel.textContent = "(" + loggedInUser + ")";
+            } else {
+                authBtn.textContent = "Login";
+                authBtn.href = "login.html";
+                userLabel.textContent = "";
+            }
+        };
+    </script>
+</body>
+</html>
