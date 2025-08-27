@@ -1,15 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malaysia - Street Food</title>
+    <title>Taiwan - Street Foodie</title>
     <link href="https://fonts.cdnfonts.com/css/gagalin" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/copperplate-gothic-29-bc" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- jQuery UI for autocomplete -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
         body {
             margin: 0;
@@ -272,7 +276,7 @@
         }
 
         .bubbletea img {
-            width: 150px;
+            width: 130px;
         }
 
         .sweetpotato img {
@@ -297,7 +301,7 @@
         /* Specific positions */
 
         .guabao {
-            top: 680px;
+            top: 650px;
             left: 10%;
         }
 
@@ -346,13 +350,36 @@
             color: white;
             margin-top: 0px;
         }
+
+        .food-map {
+            height: 300px;
+            width: 100%;
+            margin-top: 10px;
+            display: none; /* hidden until button clicked */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        button {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background: #e68900;
+            }
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav>
         <ul>
-            <li><a href="mainpage.html">Home</a></li>
+            <li><a href="index.html">Home</a></li>
             <li>
                 <a href="#">Country ▾</a>
                 <ul class="dropdown">
@@ -389,6 +416,7 @@
                 <div class="desc-box">
                     <img src="guabao_real.jpg" alt="guabao Real">
                     <p>Steamed bun stuffed with braised pork belly, pickled mustard greens, peanuts, and cilantro.</p>
+                    <button onclick="showFoodMap('Gua Bao')">View on Map</button>
                 </div>
             </div>
             <div class="food-item xiaolongbao">
@@ -397,6 +425,7 @@
                 <div class="desc-box">
                     <img src="xiaolongbao_real.jpg" alt="xiaolongbao Real">
                     <p>Delicate soup dumplings filled with minced pork and savory broth, steamed in bamboo baskets.</p>
+                    <button onclick="showFoodMap('Xiao Long Bao')">View on Map</button>
                 </div>
             </div>
             <div class="food-item stinkytofu">
@@ -405,6 +434,7 @@
                 <div class="desc-box">
                     <img src="stinkytofu_real.jpg" alt="stinkytofu Real">
                     <p>Fermented tofu with a strong aroma, deep-fried until crispy and served with pickled cabbage and chili sauce.</p>
+                    <button onclick="showFoodMap('Stinky Tofu')">View on Map</button>
                 </div>
             </div>
             <div class="food-item bubbletea">
@@ -413,6 +443,7 @@
                 <div class="desc-box">
                     <img src="bubbletea_real.jpg" alt="bubbletea Real">
                     <p>Taiwan’s iconic drink made with black tea, milk, sugar, and chewy tapioca pearls.</p>
+                    <button onclick="showFoodMap('Bubble Milk Tea')">View on Map</button>
                 </div>
             </div>
             <div class="food-item sweetpotato">
@@ -421,9 +452,14 @@
                 <div class="desc-box">
                     <img src="sweetpotato_real.jpg" alt="sweetpotato Real">
                     <p>Crispy golden balls made from mashed sweet potatoes and tapioca flour, crunchy outside and chewy inside.</p>
+                    <button onclick="showFoodMap('Sweet Potato Balls')">View on Map</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="food-map-container" style="width:100%; max-width:900px; margin:20px auto; display:none;">
+        <div id="food-map" style="width:100%; height:400px; border:2px solid #ccc; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
     </div>
 
     <!-- Footer -->
@@ -492,4 +528,90 @@
                 }
             });
         });
+
+        // Initialize map (hidden at first)
+        var map = L.map('food-map').setView([3.139, 101.686], 13); // Default KL
+
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var foodLocations = {
+            "Gua Bao": {
+                coords: [25.039425652608664, 121.4987357797182],
+                stall: "Fang Yuan Gua Bao",
+                hours: "Tuesday - Sunday:  11:30 AM to 8:00 PM, Closed on Monday",
+                location: "Stall 161, No. 17-2, Huaxi Street, Wanhua District, Taipei City (Huaxi Street Night Market)",
+                details: "https://maps.app.goo.gl/aMgHDuZs2njZqRrj7"
+            },
+            "Xiao Long Bao": {
+                coords: [25.03374166363892, 121.53012336437422],
+                stall: "Ding Tai Fung",
+                hours: "Weekdays: 10:00 AM – 9:00 PM, Weekends: 9:00 AM – 9:00 PM",
+                location: "No. 106, Section 2, Xinyi Rd, Da’an District, Taipei City (near MRT Dongmen Station Exit 5)",
+                details: "https://maps.app.goo.gl/p7TeVTPmnAKYP9xT8"
+            },
+            "Stinky Tofu": {
+                coords: [25.088793556322425, 121.52436649322763],
+                stall: "Shilin Night Market (士林夜市) — Stinky Tofu Stalls",
+                hours: "5:00 PM – 12:00 AM",
+                location: "Jihe Road area, Shilin District, Taipei City",
+                details: "https://maps.app.goo.gl/C3jfXGsZ5m85EJ5A8"
+            },
+            "Bubble Milk Tea": {
+                coords: [24.137926110445175, 120.67577465088523],
+                stall: "Chun Shui Tang (春水堂)",
+                hours: "8:00 AM – 10:00 PM",
+                location: "No. 30, Siwei Street, West District, Taichung City",
+                details: "https://maps.app.goo.gl/vuEjoJugZtTpkyGW6"
+            },
+            "Sweet Potato Balls": {
+                coords: [24.13800093850233, 120.67575433948451],
+                stall: "Liu Family Sweet Potato Balls",
+                hours: "5:00 PM–11:00 PM",
+                location: "No. 30, Siwei St, West District, Taichung City",
+                details: "https://maps.app.goo.gl/vuEjoJugZtTpkyGW67"
+            }
+        };
+
+        // Show map when food button is clicked
+        function showFoodMap(foodName) {
+            if (foodLocations[foodName]) {
+                const data = foodLocations[foodName];
+
+                // Show map container
+                document.getElementById("food-map-container").style.display = "block";
+
+                setTimeout(() => {
+                    map.invalidateSize();
+                    map.setView(data.coords, 15);
+
+                    // Rich popup with details
+                    let popupContent = `
+                  <div style="font-family:Arial;max-width:220px;">
+                    <h3 style="margin:0;">${foodName}</h3>
+                    <p><b>${data.stall}</p>
+                    <p><b>Hours:</b> ${data.hours}</p>
+                    <p><b>Location:</b> ${data.location}</p>
+                    <a href="${data.details}" target="_blank" style="color:#007bff;">📍 View on Google Maps</a>
+                  </div>
+`;
+
+                    L.popup({ maxWidth: 250 })
+                        .setLatLng(data.coords)
+                        .setContent(popupContent)
+                        .openOn(map);
+
+                    // Smooth scroll
+                    document.getElementById("food-map-container").scrollIntoView({
+                        behavior: "smooth"
+                    });
+                }, 200);
+            }
+        }
+
     </script>
+
+</body>
+</html>
