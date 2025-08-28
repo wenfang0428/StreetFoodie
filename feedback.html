@@ -297,7 +297,7 @@
             let foods = [
                 { label: "Nasi Lemak", url: "malaysia.html" },
                 { label: "Satay", url: "malaysia.html" },
-                { label: "Roti Canai", url: "malaysia.html" },
+                { label: "Char Kway Teow", url: "malaysia.html" },
                 { label: "Ramly Burger", url: "malaysia.html" },
                 { label: "Cendol", url: "malaysia.html" },
                 { label: "Yakitori", url: "japan.html" },
@@ -385,6 +385,34 @@
                 window.location.href = "login.html"; // redirect to login
             } else {
                 alert("Thank you for your feedback, " + loggedInUser + "!");
+            }
+        });
+
+        document.querySelector(".feedback-box form").addEventListener("submit", function (event) {
+            let loggedInUser = sessionStorage.getItem("loggedInUser");
+
+            if (loggedInUser) {
+                // Collect form values
+                let name = document.getElementById("name").value;
+                let email = document.getElementById("email").value;
+                let message = document.getElementById("feedback").value;
+
+                // Retrieve existing feedbacks or create new array
+                let feedbackList = JSON.parse(localStorage.getItem("feedbackList")) || [];
+
+                // Add new feedback
+                feedbackList.push({
+                    user: loggedInUser,
+                    name: name,
+                    email: email,
+                    message: message,
+                    date: new Date().toLocaleString()
+                });
+
+                // Save back to localStorage
+                localStorage.setItem("feedbackList", JSON.stringify(feedbackList));
+
+                console.log("✅ Feedback stored:", feedbackList);
             }
         });
     </script>
